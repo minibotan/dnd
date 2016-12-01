@@ -58,11 +58,13 @@ public class Subject {
         return inventory.containsAll(action.cost) && inventory.containsAll(action.requirements);
     }
 
-    public void perform(Action action, Item desirableProduct) {
+    public List<Need> perform(Action action, Item desirableProduct) {
         inventory.removeAll(action.cost);
         needs.removeAll(action.solvableNeeds);
         inventory.add(desirableProduct);
-        needs.addAll(action.consequences);
+        List<Need> consequences = action.getRandomConsequencesSet();
+        needs.addAll(consequences);
+        return consequences;
     }
 
     public Item getMissingItemFor(Action action) {

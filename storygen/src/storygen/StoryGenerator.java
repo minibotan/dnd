@@ -9,7 +9,7 @@ import java.util.Random;
 public class StoryGenerator {
     private Random randomGenerator = new Random();
 
-    private List<Need> needs = new ArrayList<>();
+    private List<Need> initialNeeds = new ArrayList<>();
     private List<Item> items = new ArrayList<>();
     private List<Item> requiredItems = new ArrayList<>();
     private List<Action> actions = new ArrayList<>();
@@ -17,22 +17,62 @@ public class StoryGenerator {
     private boolean despair = false;
 
     public StoryGenerator() {
-        Need hunger = new Need("eat", "%1$s is getting hungry.");
-        needs.add(hunger);
+        Need beerNeed = new Need("drink a beer", "%1$s wants to have a beer.");
+        initialNeeds.add(beerNeed);
 
-        Need thirst = new Need("drink", "%1$s is getting thirsty.");
-        needs.add(thirst);
+        Need fightNeed = new Need("fight", "%1$s feels strong and big.");
+
+        Need healNeed = new Need("heal", "%1$s is injured now.");
+
+        Need escapePrison = new Need("escape prison", "%1$s is caught and thrown into a cell.");
+
+        Need escapeDungeon = new Need("escape dungeon", "%1$s in thrown into a dungeon with monsters and traps.");
+
+        Need compensateDamage = new Need("compensate dmg", "%1$s breaks many things and the owner is mad.");
+
+        Item beer = new Item("beer");
+
+        Action drinkBeer = new Action("drink beer", "drinks a beer");
+        drinkBeer.solves(beerNeed);
+        drinkBeer.produces(beer);
+        drinkBeer.resultsIn(fightNeed);
+        actions.add(drinkBeer);
+
+        Action fightInABar = new Action("fight in a bar", "fights some bulls in a bar");
+        fightInABar.solves(fightNeed);
+        fightInABar.resultsIn(healNeed);
+
+        fightInABar.anotherSetOfConsequences();
+        fightInABar.resultsIn(escapePrison);
+
+        fightInABar.anotherSetOfConsequences();
+        fightInABar.resultsIn(compensateDamage);
+        actions.add(fightInABar);
+
+        Action goToEvilHealer = new Action("evil haler", "goes to that healer he was told about");
+        goToEvilHealer.solves(healNeed);
+        goToEvilHealer.resultsIn(escapeDungeon);
+        actions.add(goToEvilHealer);
+
+        Action fightOnAStreet = new Action("fight on a street", "fights some bulls on a street");
+        fightOnAStreet.solves(fightNeed);
+        fightOnAStreet.resultsIn(escapePrison);
+        actions.add(fightOnAStreet);
+
+
+        /*Need thirst = new Need("drink", "%1$s is getting thirsty.");
+        initialNeeds.add(thirst);
 
         Need fatigue = new Need("rest", "%1$s is tired.");
         Need escapeGuards = new Need("escape guards", "Guards is now after %1$s.");
 
         Need moneyNeed = new Need("be rich", "%1$s want to be richer.");
-        needs.add(moneyNeed);
+        initialNeeds.add(moneyNeed);
 
         Need gloryNeed = new Need("bathe in the glory", "%1$s starts to dream of being famous.");
-        needs.add(gloryNeed);
+        initialNeeds.add(gloryNeed);*/
 
-        Item health = new Item("health");
+        /*Item health = new Item("health");
         requiredItems.add(health);
 
         Item food = new Item("food");
@@ -42,12 +82,9 @@ public class StoryGenerator {
         items.add(beverage);
 
         Item money = new Item("money");
-        items.add(money);
+        items.add(money);*/
 
-        Item dragon = new Item("dragon");
-        //items.add()
-
-        Action eat = new Action("eat", "eats {cost}");
+        /*Action eat = new Action("eat", "eats {cost}");
         eat.solves(hunger);
         eat.costs(food);
         actions.add(eat);
@@ -66,7 +103,7 @@ public class StoryGenerator {
         theft.resultsIn(escapeGuards);
         actions.add(theft);
 
-        Action work = new Action("work", "works and earns {product}");
+        Action work = new Action("work", "works and earns money");
         work.solves(moneyNeed);
         work.produces(money);
         work.resultsIn(fatigue);
@@ -95,7 +132,7 @@ public class StoryGenerator {
         flyToMoon.solves(gloryNeed);
         flyToMoon.costs(money);
         flyToMoon.requires(health);
-        actions.add(flyToMoon);
+        actions.add(flyToMoon);*/
     }
 
     public String generate() {
@@ -109,7 +146,7 @@ public class StoryGenerator {
             }
         });
 
-        johndoe.addNeed(needs.get(randomGenerator.nextInt(needs.size())));
+        johndoe.addNeed(initialNeeds.get(randomGenerator.nextInt(initialNeeds.size())));
 
         StringBuilder sb = new StringBuilder();
         while (johndoe.hasNeeds() && !despair) {
@@ -208,10 +245,10 @@ public class StoryGenerator {
         }
 
         if (subject.canPerform(action)) {
-            subject.perform(action, desirableProduct);
+            List<Need> consequences = subject.perform(action, desirableProduct);
             sb.append(subject.name).append(" ").append(action.getActionDescription(desirableProduct)).append(". ");
             if (action.hasConsequences()) {
-                sb.append(action.consequencesDescription(subject));
+                sb.append(Action.consequencesDescription(subject, consequences));
             }
         }
 

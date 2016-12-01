@@ -2,8 +2,11 @@ package storygen.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Action {
+    private Random randomGenerator = new Random();
+
     public String label;
     public String actionDescription;
 
@@ -12,11 +15,14 @@ public class Action {
     List<Item> requirements = new ArrayList<>();
     List<Item> cost = new ArrayList<>();
     List<Item> products = new ArrayList<>();
-    List<Need> consequences = new ArrayList<>();
+    List<List<Need>> consequences = new ArrayList<>();
+
+    private int currentConsequencesSet = 0;
 
     public Action(String label, String actionDescription) {
         this.label = label;
         this.actionDescription = actionDescription;
+        consequences.add(new ArrayList<>());
     }
 
     public void solves(Need need) {
@@ -37,7 +43,12 @@ public class Action {
     }
 
     public void resultsIn(Need need) {
-        consequences.add(need);
+        consequences.get(currentConsequencesSet).add(need);
+    }
+
+    public void anotherSetOfConsequences() {
+        currentConsequencesSet++;
+        consequences.add(new ArrayList<>());
     }
 
     public boolean canSolve(Need need) {
@@ -68,9 +79,9 @@ public class Action {
         return getNarrativeEnum(cost);
     }
 
-    public String consequencesDescription(Subject subject) {
+    public static String consequencesDescription(Subject subject, List<Need> needs) {
         StringBuilder sb = new StringBuilder();
-        for (Need need : consequences) {
+        for (Need need : needs) {
             sb.append(need.getConsequenceDescription(subject)).append(" ");
         }
         return sb.toString();
@@ -102,5 +113,9 @@ public class Action {
             s = s.replace("{product}", desirableProduct.toString());
         }
         return s;
+    }
+
+    public List<Need> getRandomConsequencesSet() {
+        return consequences.get(randomGenerator.nextInt(consequences.size()));
     }
 }
