@@ -1,4 +1,4 @@
-
+package MapGenerator;
 // City Creator
 // Also have BSP realization
 
@@ -30,6 +30,8 @@ public class CC {
 
 
     public void setBuildings() throws IOException {
+        File folder = new File("images\\new");
+
         buildingNames = new String[] {"Graveyard", "Castle", "Guildhouse", "Smith", "House"};
         this.buildings  = new BufferedImage[buildingNames.length];
         for (int i = 0; i < buildingNames.length; i ++) {

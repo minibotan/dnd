@@ -1,4 +1,4 @@
-
+package MapGenerator;
 // Fractal Map Maker
 
 public class FMM {

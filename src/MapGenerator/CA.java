@@ -1,4 +1,4 @@
-/**
+package MapGenerator; /**
  * Created by Ирек on 24.11.2016.
  */
 import javax.imageio.ImageIO;
@@ -10,7 +10,7 @@ import java.util.Scanner;
 import java.util.Timer;
 
 
-//Don't remember what CA means
+//Don't remember what MapGenerator.CA means
 
 public class CA {
     int size;
