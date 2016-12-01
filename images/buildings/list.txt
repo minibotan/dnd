@@ -1,0 +1,7 @@
+6
+Graveyard 1 1 20
+Temple 1 1 30
+Castle 1 1 10
+Guildhouse 1 2 30
+Smith 1 1 40
+House 10 500 500
