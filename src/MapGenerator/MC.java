@@ -1,4 +1,4 @@
-
+package MapGenerator;
 // Map Creator
 
 import javax.imageio.ImageIO;
