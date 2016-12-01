@@ -4,10 +4,13 @@ import storygen.entity.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class StoryGenerator {
     private Random randomGenerator = new Random();
+
+    private Map<LocationType, Integer> locations;
 
     private List<Need> initialNeeds = new ArrayList<>();
     private List<Item> items = new ArrayList<>();
@@ -16,25 +19,96 @@ public class StoryGenerator {
 
     private boolean despair = false;
 
-    public StoryGenerator() {
+    public StoryGenerator(Map<LocationType, Integer> locations) {
+        this.locations = locations;
+
         Need beerNeed = new Need("drink a beer", "%1$s wants to have a beer.");
+        beerNeed.consequenceCanHappenIn(LocationType.TAVERN);
         initialNeeds.add(beerNeed);
+
+        Need treasureHideNeed = new Need ("hide a treasure", "%1$s finds a treasure.");
+        treasureHideNeed.consequenceCanHappenIn(LocationType.CASTLE);
+        treasureHideNeed.consequenceCanHappenIn(LocationType.DUNGEON);
+        treasureHideNeed.consequenceCanHappenIn(LocationType.GRAVEYARD);
+        treasureHideNeed.consequenceCanHappenIn(LocationType.TEMPLE);
+        initialNeeds.add(treasureHideNeed);
+
+        Need beRichNeed = new Need ("be rich", "%1$s understands how good the money are.");
+        beRichNeed.consequenceCanHappenIn(LocationType.HOUSE);
+        initialNeeds.add(beRichNeed);
+
+        Need beKilledNeed = new Need("be dealt with", "%1$s becomes dangerous for the people around.");
+        beKilledNeed.consequenceCanHappenIn(LocationType.HOUSE);
+        beKilledNeed.consequenceCanHappenIn(LocationType.GRAVEYARD);
+        beKilledNeed.consequenceCanHappenIn(LocationType.TAVERN);
+
+        Need saveALotOfMoney = new Need("save a lot of money", "%1$s becomes rich.");
+        saveALotOfMoney.consequenceCanHappenIn(LocationType.HOUSE);
 
         Need fightNeed = new Need("fight", "%1$s feels strong and big.");
 
+        Need createACoolElixir = new Need("create a magnificent elixir", "%1$s have a great idea for alchemy.");
+
         Need healNeed = new Need("heal", "%1$s is injured now.");
+        healNeed.consequenceCanHappenIn(LocationType.SHOP);
 
         Need escapePrison = new Need("escape prison", "%1$s is caught and thrown into a cell.");
+        escapePrison.consequenceCanHappenIn(LocationType.CASTLE);
 
         Need escapeDungeon = new Need("escape dungeon", "%1$s in thrown into a dungeon with monsters and traps.");
+        escapeDungeon.consequenceCanHappenIn(LocationType.DUNGEON);
 
-        Need compensateDamage = new Need("compensate dmg", "%1$s breaks many things and the owner is mad.");
+        Need compensateDamage = new Need("compensate damage", "%1$s breaks many things and the owner is mad.");
 
-        Item beer = new Item("beer");
+        Need beBuried = new Need("be alive but he cannot", "%1$s is dead.");
+
+        Need createAMapNeed = new Need("create a map for this", "%1$s needs a map to guide here.");
+
+        Need hideMap = new Need("hide the map", "%1$s wants the map to be a secret.");
+        hideMap.consequenceCanHappenIn(LocationType.CASTLE);
+        hideMap.consequenceCanHappenIn(LocationType.DUNGEON);
+        hideMap.consequenceCanHappenIn(LocationType.HOUSE);
+
+        Need beRevengedNeed = new Need("be revenged", "%1$s gets killed by a murderer.");
+
+        Need beBanishedNeed = new Need("be banished from this world", "%1$s becomes a ghost.");
+
+        Need beRescuedNeed = new Need("be rescued", "%1$s is trapped.");
+
+        Need surviveAPlague = new Need("survive a plague", "This results in a dreadful plague.");
+
+        Need suppressCompetition = new Need("suppress competitors", "%1$s becomes so good that he dominates on the market.");
+
+        Need beImmortal = new Need("become immortal", "%1$s is very afraid of death and decides to do something about it.");
+        beImmortal.consequenceCanHappenIn(LocationType.HOUSE);
+        initialNeeds.add(beImmortal);
+
+        Action excelInAlchemy = new Action("excel in alchemy", "excels in alchemy");
+        excelInAlchemy.solves(createACoolElixir);
+        excelInAlchemy.solves(beImmortal);
+        excelInAlchemy.resultsIn(surviveAPlague);
+
+        excelInAlchemy.anotherSetOfConsequences();
+        excelInAlchemy.resultsIn(suppressCompetition);
+        actions.add(excelInAlchemy);
+
+        Action workALot = new Action("work a lot", "works a lot");
+        workALot.solves(saveALotOfMoney);
+        workALot.resultsIn(beBuried);
+        actions.add(workALot);
+
+        Action inheritMoney = new Action("inheritMoney", "inherits a lot of money");
+        inheritMoney.solves(saveALotOfMoney);
+        inheritMoney.resultsIn(beBuried);
+        actions.add(inheritMoney);
+
+        Action becomeBandit = new Action("become a bandit", "becomes a bandit");
+        becomeBandit.solves(beRichNeed);
+        becomeBandit.resultsIn(beKilledNeed);
+        actions.add(becomeBandit);
 
         Action drinkBeer = new Action("drink beer", "drinks a beer");
         drinkBeer.solves(beerNeed);
-        drinkBeer.produces(beer);
         drinkBeer.resultsIn(fightNeed);
         actions.add(drinkBeer);
 
@@ -59,80 +133,33 @@ public class StoryGenerator {
         fightOnAStreet.resultsIn(escapePrison);
         actions.add(fightOnAStreet);
 
+        Action hideInATemple = new Action("hide it", "hides it in a secret place");
+        hideInATemple.solves(treasureHideNeed);
+        hideInATemple.resultsIn(beBuried);
 
-        /*Need thirst = new Need("drink", "%1$s is getting thirsty.");
-        initialNeeds.add(thirst);
+        hideInATemple.anotherSetOfConsequences();
+        hideInATemple.resultsIn(createAMapNeed);
 
-        Need fatigue = new Need("rest", "%1$s is tired.");
-        Need escapeGuards = new Need("escape guards", "Guards is now after %1$s.");
+        hideInATemple.anotherSetOfConsequences();
+        hideInATemple.resultsIn(beRevengedNeed);
 
-        Need moneyNeed = new Need("be rich", "%1$s want to be richer.");
-        initialNeeds.add(moneyNeed);
+        hideInATemple.anotherSetOfConsequences();
+        hideInATemple.resultsIn(beBanishedNeed);
 
-        Need gloryNeed = new Need("bathe in the glory", "%1$s starts to dream of being famous.");
-        initialNeeds.add(gloryNeed);*/
+        actions.add(hideInATemple);
 
-        /*Item health = new Item("health");
-        requiredItems.add(health);
+        Action tryToEscape = new Action("escape", "looks for a way out");
+        tryToEscape.solves(escapeDungeon);
+        tryToEscape.resultsIn(beRescuedNeed);
 
-        Item food = new Item("food");
-        items.add(food);
+        tryToEscape.anotherSetOfConsequences();
+        tryToEscape.resultsIn(treasureHideNeed);
+        actions.add(tryToEscape);
 
-        Item beverage = new Item("beverage");
-        items.add(beverage);
-
-        Item money = new Item("money");
-        items.add(money);*/
-
-        /*Action eat = new Action("eat", "eats {cost}");
-        eat.solves(hunger);
-        eat.costs(food);
-        actions.add(eat);
-
-        Action drink = new Action("drink", "drinks {cost}");
-        drink.solves(thirst);
-        drink.costs(beverage);
-        actions.add(drink);
-
-        Action sleep = new Action("sleep", "sleeps");
-        sleep.solves(fatigue);
-        actions.add(sleep);
-
-        Action theft = new Action("steal", "steals {product}");
-        theft.produces(money);
-        theft.resultsIn(escapeGuards);
-        actions.add(theft);
-
-        Action work = new Action("work", "works and earns money");
-        work.solves(moneyNeed);
-        work.produces(money);
-        work.resultsIn(fatigue);
-        actions.add(work);
-
-        Action buy = new Action("buy", "buys {product}");
-        buy.costs(money);
-        buy.produces(food);
-        buy.produces(beverage);
-        actions.add(buy);
-
-        Action hide = new Action("hide", "hides");
-        hide.solves(escapeGuards);
-        actions.add(hide);
-
-        Action dragonFight = new Action("fight", "fights a dragon");
-        dragonFight.resultsIn(fatigue);
-        dragonFight.costs(health);
-        dragonFight.solves(gloryNeed);
-        dragonFight.solves(moneyNeed);
-        dragonFight.produces(money);
-        dragonFight.resultsIn(gloryNeed);
-        actions.add(dragonFight);
-
-        Action flyToMoon = new Action("fly to the Moon", "flies to the Moon");
-        flyToMoon.solves(gloryNeed);
-        flyToMoon.costs(money);
-        flyToMoon.requires(health);
-        actions.add(flyToMoon);*/
+        Action createAMap = new Action("create a map", "creates a detailed map of the place and its surroundings");
+        createAMap.solves(createAMapNeed);
+        createAMap.resultsIn(hideMap);
+        actions.add(createAMap);
     }
 
     public String generate() {
@@ -163,8 +190,9 @@ public class StoryGenerator {
 
         Action solution = findSolution(need);
 
+        sb.append(getPlaceDescription(need));
         if (solution == null) {
-            sb.append(subject.name).append(" has no ways of doing so. He despairs and cries.");
+            //sb.append(subject.name).append(" has no ways of doing so. He despairs and cries.");
             despair = true;
         } else {
             sb.append(tryPerformAction(subject, solution, null));
@@ -251,6 +279,34 @@ public class StoryGenerator {
                 sb.append(Action.consequencesDescription(subject, consequences));
             }
         }
+
+        return sb.toString();
+    }
+
+    private String getPlaceDescription(Need need) {
+        if (!need.hasLocations()) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        LocationType location = null;
+        List<LocationType> possibleLocations = need.getPossibleLocations();
+        List<Boolean> used = new ArrayList<>(possibleLocations.size());
+        possibleLocations.forEach(l -> used.add(false));
+        while (location == null) {
+            if (possibleLocations.isEmpty()) {
+                return "";
+            }
+            LocationType tmp = need.getRandomPossibleLocation();
+            possibleLocations.remove(tmp);
+
+            if (locations.containsKey(tmp) && locations.get(tmp) > 0) {
+                location = tmp;
+            }
+        }
+
+        sb.append("Location: ").append(location.toString()).append(" #").append(randomGenerator.nextInt(locations.get(location)) + 1).append(". ");
 
         return sb.toString();
     }
