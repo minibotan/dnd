@@ -1,16 +1,15 @@
 package MapGenerator;
 // Fractal Map Maker
 
-public class FMM {
+public class Step1 {
 
     // размер карты: должен быть степенью 2
     public int size;
 
-    // распределить память
     public int[][] map;
     public int tiles;
 
-    public FMM(int size, int t) {
+    public Step1(int size, int t) {
         this.size = size;
         map = new int[size][size];
         tiles = t;

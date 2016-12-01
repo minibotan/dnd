@@ -5,17 +5,19 @@ package MapGenerator;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 
-public class CC {
+public class Step3 {
     BufferedImage img;
     BufferedImage buildings[];
     String buildingNames[];
+    int[] chance;
+    int[] ch;
+    int[] quantity;
+    int[] onMap;
 
-    int[] chance = new int[] {20,20,20,20,100};
-    int[] ch = new int[] {1,1,4,2,100};
-    int[] quantity = new int[]{1, 1, 1, 1, 1};
-    int[] onMap = new int[]{0, 0, 0, 0, 0};
     int[][] map;
     int[][] mapb;
     int size;
@@ -26,26 +28,36 @@ public class CC {
 
 
 
-//constructor
-
-
     public void setBuildings() throws IOException {
-        File folder = new File("images\\new");
-
-        buildingNames = new String[] {"Graveyard", "Castle", "Guildhouse", "Smith", "House"};
-        this.buildings  = new BufferedImage[buildingNames.length];
-        for (int i = 0; i < buildingNames.length; i ++) {
-            buildings[i] = ImageIO.read(new File("images\\new\\"+buildingNames[i]+".png"));
+        File list = new File("images\\buildings\\list.txt");
+        Scanner sc = new Scanner(list);
+        int len = sc.nextInt();
+        buildings  = new BufferedImage[len];
+        buildingNames  = new String[len];
+        quantity = new int[len];
+        ch = new int[len];
+        chance = new int[len];
+        onMap = new int[len];
+        for(int i = 0; i < len; i ++){
+            sc.nextLine();
+            String name = sc.next();
+            buildingNames[i] = name;
+            buildings[i] = ImageIO.read(new File("images\\buildings\\"+name+".png"));
+            quantity[i] = sc.nextInt();
+            ch[i] = sc.nextInt();
+            chance[i] = sc.nextInt();
         }
     }
 
-    public  CC(int[][] map, BufferedImage img) throws IOException {
+
+    public Step3(int[][] map, BufferedImage img, long time) throws IOException {
         setBuildings();
         this.map = map;
         size = map.length;
         this.img = img;
         Check();
         BSP();
+        Write(time);
     }
 
 
@@ -72,11 +84,11 @@ public class CC {
             while (maxx-minx >= 30 && maxy-miny >= 30) {
                 for(int i = 0; i < buildings.length; i ++) {
                     if (maxx - minx >= buildings[i].getWidth() && maxy - miny >= buildings[i].getHeight()) {
-                        if (quantity[0] > 0) {
-                            quantity[0]--;
+                        if (quantity[i] > 0) {
+                            quantity[i]--;
                             putBuilding(minx, miny, i);
                             for (int k = 0; k < chance.length; k++) {
-                                if (Math.random() * 100 < chance[k]) {
+                                if (Math.random() * 500 < chance[k]) {
                                     quantity[k]++;
                                     chance[k] = 0;
                                 }
@@ -131,37 +143,37 @@ public class CC {
         }
         if(one.good()) tree(one); else one.dig();
         if(two.good()) tree(two); else two.dig();
-        makeway(one, two, (int)d, r);
-
+//        makeway(one, two, (int)d, r);
     }
-    private void makeway(quad one, quad two, int d, boolean r) {
-        int mx, mn;
-        if(r){
-            mx = Math.min(one.maxx,two.maxx);
-            mn = Math.max(one.minx,two.minx);
-        } else {
-            mx = Math.min(one.maxy,two.maxy);
-            mn = Math.max(one.miny,two.miny);
-        }
-        int j = d;
-        int i = mn;
-        while (dig(i,j,r) && i <= mx) i++;
-    }
-    private boolean dig(int i, int j, boolean r){
-        if(i+1 >=size || j+1>= size || i-1<0 || j-1 < 0) return false;
-        if(r) {
-            if(mapb[i][j] != 1) return false;
-            mapb[i][j] = 2;
-            mapb[i][j+1] = 2;
-            mapb[i][j-1] = 2;
-        } else {
-            if(mapb[j][i] != 1) return false;
-            mapb[j][i] = 2;
-            mapb[j+1][i] = 2;
-            mapb[j-1][i] = 2;
-        }
-        return true;
-    }
+//    private void makeway(quad one, quad two, int d, boolean r) {
+//        int mx, mn;
+//        if(r){
+//            mx = Math.min(one.maxx,two.maxx);
+//            mn = Math.max(one.minx,two.minx);
+//        } else {
+//            mx = Math.min(one.maxy,two.maxy);
+//            mn = Math.max(one.miny,two.miny);
+//        }
+//        int j = d;
+//        int i = mn;
+//        while (dig(i,j,r) && i <= mx) i++;
+//    }
+//
+//    private boolean dig(int i, int j, boolean r){
+//        if(i+1 >=size || j+1>= size || i-1<0 || j-1 < 0) return false;
+//        if(r) {
+//            if(mapb[i][j] != 1) return false;
+//            mapb[i][j] = 2;
+//            mapb[i][j+1] = 2;
+//            mapb[i][j-1] = 2;
+//        } else {
+//            if(mapb[j][i] != 1) return false;
+//            mapb[j][i] = 2;
+//            mapb[j+1][i] = 2;
+//            mapb[j-1][i] = 2;
+//        }
+//        return true;
+//    }
 
 
 
@@ -205,6 +217,17 @@ public class CC {
         }
         onMap[k]++;
     }
+
+    void Write(long time) throws IOException {
+        File file = new File("Results\\"+time+"\\locations.dnd");
+        file.createNewFile();
+        FileWriter writer = new FileWriter(file);
+        for (int i = 0; i < buildings.length; i ++) {
+            writer.append(buildingNames[i] + ":" + onMap[i]+"\n");
+        }
+        writer.close();
+    }
+
 
     BufferedImage getImg(){
         return img;

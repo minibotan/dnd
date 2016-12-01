@@ -1,24 +1,24 @@
-package MapGenerator; /**
- * Created by Ирек on 24.11.2016.
- */
+package MapGenerator;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Timer;
 
 
-//Don't remember what MapGenerator.CA means
+//Don't remember what MapGenerator.Step2 means
 
-public class CA {
+public class Step2 {
     int size;
     int tiles;
     int m = 8;
     int map[][];
     int tmap[][];
-    public CA(int[][] map, int t){
+    public Step2(int[][] map, int t) throws IOException {
         tiles = t;
         size = map.length;
         this.map = map;
@@ -32,6 +32,7 @@ public class CA {
                 }
             }
         }
+//        writeInfo();
     }
 
     int count(int k, int l){
@@ -52,6 +53,29 @@ public class CA {
         }
         return max;
     }
+
+//    TODO: Locations Counter. BFS or DFS
+//    void writeInfo() throws IOException {
+//        File file = new File("locations.dnd");
+//        file.createNewFile();
+//        FileWriter writer = new FileWriter(file);
+//            writer.append(countLocations() + "\n");
+//        writer.close();
+//    }
+//
+//    private int countLocations() {
+//        String[] locations = new String[]{"Land", "Forest", "Water", "Rock"};
+//        int[] count = new int[4];
+//        for(int i = 0; i < size; i ++){
+//            for(int j = 0; j < size; j++){
+//                if(){
+//
+//                }
+//            }
+//        }
+//
+//        return 0;
+//    }
 
     int[][] get(){
         return map;
