@@ -39,7 +39,7 @@ public class DNDGenerator {
             StoryGenerator generator = new StoryGenerator(locations);
             StringBuilder stories = new StringBuilder();
 
-            for (int i = 0; i < Math.min(Math.round(locationsCount / Math.log(locationsCount)), 30); i++) {
+            for (int i = 0; i < Math.min(Math.round(Math.sqrt(locationsCount)), 20); i++) {
                 stories.append(generator.generate()).append("\n\n");
             }
 
