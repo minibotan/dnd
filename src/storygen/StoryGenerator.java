@@ -163,7 +163,9 @@ public class StoryGenerator {
     }
 
     public String generate() {
-        Subject johndoe = new Subject("John Doe");
+        Subject johndoe = new Subject("An NPC");
+
+        despair = false;
 
         requiredItems.forEach(johndoe::giveItem);
 
