@@ -26,7 +26,7 @@ public class DNDGenerator {
             List<Integer> locationsCountUtil = new ArrayList<>(1);
             locationsCountUtil.add(0);
             try {
-                Files.lines(Paths.get(foldName + "locations.dnd")).forEach(s -> {
+                Files.lines(Paths.get(foldName + "/locations.dnd")).forEach(s -> {
                     String[] parts = s.split(":");
                     locationsCountUtil.set(0, locationsCountUtil.get(0) + Integer.valueOf(parts[1]));
                     locations.put(LocationType.valueOf(parts[0].toUpperCase()), Integer.valueOf(parts[1]));
